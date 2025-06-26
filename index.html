@@ -1,499 +1,590 @@
-
 <!DOCTYPE html>
-<html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Melody Beans</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      html {
-        scroll-behavior: smooth;
-      }
-      body {
-        font-family: 'DFKai-SB', '標楷體', cursive, sans-serif;
-        background-color: #fdfaf5;
-        background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-      }
-      .staff-lines {
-        background-image: linear-gradient(to bottom, transparent 18%, #ccc 18%, #ccc 19%, transparent 19%, transparent 38%, #ccc 38%, #ccc 39%, transparent 39%, transparent 58%, #ccc 58%, #ccc 59%, transparent 59%, transparent 78%, #ccc 78%, #ccc 79%, transparent 79%);
-        background-size: 100% 100px;
-        background-repeat: repeat-y;
-        opacity: 0.05;
-      }
-      .floating-note {
-        position: absolute;
-        animation: floatNote 6s ease-in-out infinite;
-        font-size: 1.5rem;
-        color: #b58863;
-        opacity: 0;
-      }
-      @keyframes floatNote {
-        0% { transform: translateY(20px); opacity: 0; }
-        50% { opacity: 0.6; }
-        100% { transform: translateY(-100px); opacity: 0; }
-      }
-      .fade-up {
-        opacity: 0;
-        transform: translateY(60px);
-        transition: opacity 1.2s ease-out, transform 1.2s ease-out;
-      }
-      .fade-up.active {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      .floating-cart {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background-color: #b58863;
-  color: white;
-  border-radius: 9999px;
-  padding: 16px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  font-size: 1.5rem;
-  z-index: 1000;
-  transition: transform 0.3s ease-in-out;
-}
-.floating-cart:hover {
-  transform: scale(1.1);
-}
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meledy Bean | 品味旋律，啜飲人生</title>
+    
+    <!-- Placeholder Comments -->
+    <!-- Chosen Palette: Warm Neutrals & Natural Accents (淺米白, 柔和木質棕, 深咖啡文字, 橄欖綠點綴) -->
+    <!-- Application Structure Plan: A narrative flow starting with brand introduction, moving to interactive product discovery (Flavor Guide), followed by brand depth (Story, Artisans), practical information (Knowledge, Events, FAQ), and ending with community engagement (Reviews) and a clear call-to-action (Contact Form). This structure guides the user from initial attraction to deep engagement and finally to potential contact, optimizing for marketing goals. -->
+    <!-- Visualization & Content Choices: Interactive Flavor Radar (Chart.js) to visually communicate complex flavor profiles. Accordion (HTML/JS) for FAQ to present dense information cleanly. Inquiry Form (HTML/JS) to provide a low-friction contact method. All choices adhere to the NO SVG/Mermaid rule, focusing on dynamic, canvas-based, or pure HTML/CSS solutions. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
-      .ornate-box {
-        border: 2px solid #b58863;
-        border-radius: 1rem;
-        background: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-        background-size: cover;
-        padding: 1rem;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-bg: #fdfaf5; /* 溫暖米白 */
+            --color-surface: #ffffff;
+            --color-primary: #b58863; /* 柔和木質棕 */
+            --color-secondary: #3f2e2e; /* 深咖啡文字 */
+            --color-accent: #6b8e23; /* 橄欖綠 */
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-secondary);
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            background-attachment: fixed;
+        }
+        h1, h2, h3, h4, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card {
+            background-color: var(--color-surface);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #a07654;
+        }
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #5a4444;
+        }
+        .accordion-button::after {
+            content: '\f078'; /* Font Awesome down arrow */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            float: right;
+            transition: transform 0.3s;
+        }
+        .accordion-button.open::after {
+            transform: rotate(180deg);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .section-title {
+            color: var(--color-primary);
+        }
+        .offer-price-old {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+        .offer-price-new {
+            color: #d9534f; /* Red for new price */
+            font-weight: bold;
+            font-size: 1.2em;
+        }
     </style>
-  </head>
-  <body class="text-[#3f2e2e]">
-    <nav class="bg-[#f5efe6] shadow-md sticky top-0 z-50 fade-up">
-      <div class="max-w-[1200px] mx-auto flex justify-between items-center py-4 px-6">
-        <h1 class="text-2xl font-bold">🎼 Melody Beans</h1>
-        <ul class="flex gap-6 text-lg">
-          <li><a href="#home" class="hover:underline">首頁</a></li>
-          <li><a href="#products" class="hover:underline">商品</a></li>
-          <li><a href="#cart" class="hover:underline">購物車</a></li>
-          <li><a href="#review" class="hover:underline">評論</a></li>
-          <li><a href="#about" class="hover:underline">關於我們</a></li>
-        </ul>
-        <button class="ml-4 text-sm underline">EN</button>
-      </div>
+</head>
+<body>
+    <nav class="bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center p-4">
+            <a href="#home" class="text-3xl font-serif text-secondary">Meledy Bean</a>
+            <div class="hidden md:flex items-center space-x-6 text-lg">
+                <a href="#products" class="hover:text-primary transition-colors">咖啡豆鑑賞</a>
+                <a href="#story" class="hover:text-primary transition-colors">我們的故事</a>
+                <a href="#knowledge" class="hover:text-primary transition-colors">咖啡知識</a>
+                <a href="#faq" class="hover:text-primary transition-colors">常見問題</a>
+                <a href="#contact" class="px-4 py-2 rounded-full btn-primary">聯絡我們</a>
+            </div>
+            <!-- Mobile Menu Button will be added if needed -->
+        </div>
     </nav>
 
-    <section id="home" class="bg-[#fffdf8] h-[100vh] relative overflow-hidden flex items-center justify-center text-center fade-up">
-      <div class="staff-lines absolute inset-0"></div>
-      <div class="floating-note" style="top:65%;left:10%">𝄞</div>
-      <div class="floating-note" style="top:75%;left:80%">♩</div>
-      <div class="floating-note" style="top:70%;left:20%">♪</div>
-      <div class="floating-note" style="top:80%;left:60%">♬</div>
-      <div class="max-w-[800px] px-6 z-10">
-        <h2 class="text-5xl font-extrabold mb-4 drop-shadow">讓每一杯咖啡☕都有旋律🎵</h2>
-        <p class="text-xl text-[#6b4c3b] font-medium mb-8">結合咖啡的香與音樂的韻，啟動生活靈感。</p>
-        <img src="https://source.unsplash.com/featured/?coffee,music,nature" alt="咖啡與音樂" class="w-full rounded-xl shadow-lg" />
-      </div>
-    </section>
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="h-screen bg-cover bg-center flex items-center justify-center text-white relative" style="background-image: url('./image/image_2.jpg');">
+            <div class="absolute inset-0 bg-black/40"></div>
+            <div class="relative text-center z-10 p-6 fade-in-up">
+                <h1 class="text-5xl md:text-7xl font-serif mb-4 text-shadow-soft">品味旋律，啜飲人生</h1>
+                <p class="text-xl md:text-2xl max-w-2xl mx-auto">在 Meledy Bean，每一顆咖啡豆都承載著一段故事與一首旋律，我們邀請您一同放慢腳步，感受生活中的溫暖與美好。</p>
+            </div>
+        </section>
 
-    <section id="products" class="py-16 fade-up">
-      <div class="max-w-[1200px] mx-auto px-6">
-        <h2 class="text-3xl mb-6 text-center">🎵 精選咖啡豆</h2>
-        <div class="mb-6 text-center">
-          <label for="category" class="mr-2 font-bold">分類：</label>
-          <select id="category" class="p-2 border rounded bg-[#fffdf8] shadow-md hover:border-[#b58863] focus:outline-none">
-            <option value="all">全部</option>
-            <option value="light">淺焙</option>
-            <option value="medium">中焙</option>
-            <option value="dark">深焙</option>
-          </select>
+        <!-- Products Section -->
+        <section id="products" class="py-20">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-12 fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">咖啡豆鑑賞</h2>
+                    <p class="mt-4 text-lg text-gray-600">探索由我們精心烘焙，來自世界各地的風味樂章。</p>
+                </div>
+                <div id="product-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Product cards will be rendered here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Flavor Guide Section -->
+        <section id="flavor-guide" class="py-20 bg-white/50">
+            <div class="max-w-6xl mx-auto px-6 text-center">
+                <div class="fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">風味探索指南</h2>
+                    <p class="mt-4 text-lg text-gray-600 mb-8">不知道如何選擇？讓我們為您視覺化每一款咖啡的獨特個性。</p>
+                </div>
+                <div class="flex flex-col md:flex-row items-center gap-8 fade-in-up">
+                    <div class="w-full md:w-1/2">
+                        <label for="flavor-select" class="block text-left mb-2 font-semibold">選擇一款咖啡豆來查看風味圖譜：</label>
+                        <select id="flavor-select" class="w-full p-3 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary">
+                            <!-- Options will be populated by JS -->
+                        </select>
+                        <div id="lifestyle-suggestion" class="mt-6 text-left p-4 bg-green-50 rounded-lg border border-accent text-gray-700">
+                            <h4 class="font-bold font-serif text-lg text-accent mb-2">生活提案</h4>
+                            <p>請先選擇一款咖啡豆，我們會為您推薦最適合的品飲時刻與搭配。</p>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <canvas id="flavorRadarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Story & Artisan Section -->
+        <section id="story" class="py-20">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="text-center mb-12 fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">我們的故事</h2>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-lg fade-in-up">
+                    <h3 class="text-2xl font-serif text-secondary mb-4">從樂音到咖啡香，始於一份純粹的熱愛</h3>
+                    <p class="text-gray-700 leading-relaxed space-y-4">
+                        <span>🎶 23 年前的今天，樂海樂器正式開幕，那是我們對聲音藝術的初心。一路走來，我們陪伴無數樂友選琴、修琴，更一起分享著對美好樂音的熱愛與執著。</span>
+                        <span>☕ 2021 年，一場突如其來的疫情三級警戒，讓我心中湧現了不安。就在那段幾乎與世隔絕的日子裡，我卻意外地一頭栽進了咖啡烘焙的奇妙世界。咖啡的醇厚香氣，彷彿成了另一種心靈的安定劑與創意的泉源。</span>
+                        <span>2024 年，我榮幸地參加烘豆比賽並獲得獎項，這份肯定更加堅定了我走上「雙品牌職人之路」的決心。從揚琴工坊的精湛細膩手工，到精品咖啡豆的精準火候掌控，我始終堅信——聲音與風味，都是值得我們傾注心血、用心雕琢的藝術。</span>
+                    </p>
+                    <div class="mt-8 text-center">
+                        <!-- Placeholder for video or more imagery -->
+                        <div class="relative w-full h-48 bg-gray-200 flex items-center justify-center rounded-lg overflow-hidden">
+                            <i class="fas fa-play-circle text-6xl text-gray-500 opacity-75"></i>
+                            <p class="absolute text-gray-700 text-sm mt-2">（未來將在此處加入品牌故事影片）</p>
+                            <img src="https://placehold.co/600x300/e0e0e0/555555?text=品牌故事影片預覽" alt="品牌故事影片預覽" class="absolute inset-0 w-full h-full object-cover opacity-50">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-16 text-center fade-in-up">
+                    <h3 class="text-3xl font-serif section-title mb-8">幕後職人</h3>
+                    <div class="card p-8 flex flex-col md:flex-row items-center gap-8">
+                        <img src="https://placehold.co/150x150/a07654/FFFFFF?text=職人" class="w-36 h-36 rounded-full object-cover" alt="咖啡職人">
+                        <div class="text-left">
+                            <h4 class="text-2xl font-serif text-secondary">創辦人 / 首席烘豆師</h4>
+                            <p class="text-lg text-primary mt-1">陳師傅</p>
+                            <p class="mt-4 text-gray-600">擁有超過20年的樂器製作工藝背景，將對精準與和諧的追求，完美轉化為對咖啡烘焙的熱情。對他而言，每一條烘焙曲線，都像是在譜寫一首動人的樂曲。</p>
+                            <p class="mt-2 text-gray-700">由陳師傅親自烘培，確保每一顆豆子都能展現其最佳風味。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Knowledge Section -->
+        <section id="knowledge" class="py-20 bg-white/50">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-12 fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">線上咖啡小學堂</h2>
+                    <p class="mt-4 text-lg text-gray-600">一些關於咖啡的趣聞與知識，希望能豐富您的咖啡生活。</p>
+                </div>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card p-6 fade-in-up group">
+                        <h3 class="text-xl font-serif mb-2 group-hover:text-primary transition-colors">手沖咖啡新手入門</h3>
+                        <p class="text-gray-600">想在家享受一杯完美的手沖咖啡嗎？從磨豆、水溫到注水技巧，我們為您整理了幾個關鍵步驟，讓您輕鬆上手。</p>
+                        <a href="javascript:void(0);" class="text-primary hover:underline mt-4 inline-block more-info-link">閱讀更多 &raquo;</a>
+                    </div>
+                    <div class="card p-6 fade-in-up group" style="transition-delay: 100ms;">
+                        <h3 class="text-xl font-serif mb-2 group-hover:text-primary transition-colors">如何保存咖啡豆？</h3>
+                        <p class="text-gray-600">咖啡豆是嬌貴的農產品。避免光線、空氣、濕氣和高溫是保持其新鮮風味的不二法門。建議使用密封罐存放在陰涼處。</p>
+                        <a href="javascript:void(0);" class="text-primary hover:underline mt-4 inline-block more-info-link">閱讀更多 &raquo;</a>
+                    </div>
+                    <div class="card p-6 fade-in-up group" style="transition-delay: 200ms;">
+                        <h3 class="text-xl font-serif mb-2 group-hover:text-primary transition-colors">音樂與咖啡的完美結合</h3>
+                        <p class="text-gray-600">您知道嗎？聆聽不同類型的音樂，可能會影響您對咖啡風味的感受。下次品嚐時，不妨試著搭配一首古典樂或爵士樂吧！</p>
+                        <a href="javascript:void(0);" class="text-primary hover:underline mt-4 inline-block more-info-link">閱讀更多 &raquo;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Special Offers Section -->
+        <section id="offers" class="py-20">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                <div class="fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">最新優惠與活動</h2>
+                    <p class="mt-4 text-lg text-gray-600 mb-8">不定期推出精選特價，讓您以更優惠的價格品嚐我們的精品咖啡。</p>
+                    <div id="special-offers-list" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Special offers will be rendered here -->
+                    </div>
+                    <div class="mt-10">
+                        <a href="#products" class="px-8 py-3 rounded-full btn-primary inline-block">
+                            <i class="fas fa-tags mr-2"></i> 查看所有咖啡豆
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section id="faq" class="py-20 bg-white/50">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="text-center mb-12 fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">常見問題</h2>
+                </div>
+                <div id="faq-container" class="space-y-4 fade-in-up">
+                    <!-- FAQ items will be rendered here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Reviews Section -->
+        <section id="review" class="py-20">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="text-center mb-12 fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">顧客的溫馨回饋</h2>
+                </div>
+                <div id="review-list" class="space-y-6 fade-in-up">
+                    <!-- Reviews will be rendered here -->
+                </div>
+                 <div class="mt-12 card p-8 fade-in-up">
+                    <h3 class="text-2xl font-serif mb-4 text-center">分享您的品飲心得</h3>
+                    <form id="review-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <input type="text" id="reviewer-name" placeholder="您的暱稱" class="p-3 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary" required>
+                            <select id="review-rating" class="p-3 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary" required>
+                                <option value="" disabled selected>您會給幾顆星？</option>
+                                <option value="⭐️⭐️⭐️⭐️⭐️">⭐️⭐️⭐️⭐️⭐️</option>
+                                <option value="⭐️⭐️⭐️⭐️">⭐️⭐️⭐️⭐️</option>
+                                <option value="⭐️⭐️⭐️">⭐️⭐️⭐️</option>
+                            </select>
+                        </div>
+                        <textarea id="review-content" rows="4" placeholder="在這裡寫下您的評論..." class="p-3 w-full border border-gray-300 rounded-md focus:ring-primary focus:border-primary" required></textarea>
+                        <div class="text-center mt-6">
+                            <button type="submit" class="px-8 py-3 rounded-full btn-secondary">送出評論</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-white/50">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                 <div class="fade-in-up">
+                    <h2 class="text-4xl font-serif section-title">聯絡我們</h2>
+                    <p class="mt-4 text-lg text-gray-600 mb-8">有任何問題、課程詢問或商品訂購需求，都歡迎隨時與我們聯繫！</p>
+                </div>
+                <div class="card p-8 fade-in-up">
+                    <div class="md:flex md:justify-around md:items-start">
+                        <div class="mb-8 md:mb-0">
+                            <h3 class="text-2xl font-serif mb-4">店家資訊</h3>
+                            <div class="space-y-2 text-lg">
+                                <p><i class="fa-solid fa-store text-primary mr-2"></i> 樂海樂器咖啡</p>
+                                <p><i class="fa-solid fa-phone text-primary mr-2"></i> 03-4081932</p>
+                                <p><i class="fa-solid fa-location-dot text-primary mr-2"></i> 桃園市中壢區中正路4段141號</p>
+                            </div>
+                            <div class="mt-6">
+                                <a href="tel:03-4081932" class="inline-block px-6 py-3 rounded-full btn-primary text-lg">
+                                    <i class="fa-solid fa-phone mr-2"></i> 立即致電訂購
+                                </a>
+                            </div>
+                        </div>
+                         <div class="md:w-1/2">
+                            <h3 class="text-2xl font-serif mb-4">線上詢問</h3>
+                             <form id="inquiry-form">
+                                 <input type="text" id="inquiry-name" placeholder="您的姓名" class="p-3 w-full border border-gray-300 rounded-md mb-4" required>
+                                 <input type="email" id="inquiry-email" placeholder="您的電子郵件" class="p-3 w-full border border-gray-300 rounded-md mb-4" required>
+                                 <textarea id="inquiry-message" rows="5" placeholder="您的訊息..." class="p-3 w-full border border-gray-300 rounded-md mb-4" required></textarea>
+                                 <button type="submit" class="px-8 py-3 rounded-full btn-secondary">送出訊息</button>
+                             </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-secondary text-white">
+        <div class="max-w-6xl mx-auto py-8 px-6 text-center">
+            <div class="mb-4">
+                <a href="#" class="text-2xl mx-3 hover:text-primary transition-colors"><i class="fab fa-facebook-square"></i></a>
+                <a href="#" class="text-2xl mx-3 hover:text-primary transition-colors"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-2xl mx-3 hover:text-primary transition-colors"><i class="fab fa-line"></i></a>
+            </div>
+            <p>&copy; 2025 Meledy Bean. 品味旋律，啜飲人生。 | 樂海樂器咖啡 版權所有.</p>
         </div>
-        <div id="product-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-      </div>
-    </section>
-
-    <section id="cart" class="py-16 bg-[#fff9f0] fade-up">
-      <div class="max-w-[900px] mx-auto px-6">
-        <h2 class="text-2xl mb-4">🛒 購物車</h2>
-        <table class="w-full border text-left">
-          <thead>
-            <tr class="bg-[#f5efe6]">
-              <th class="p-2 border">商品</th>
-              <th class="p-2 border">數量</th>
-              <th class="p-2 border">單價</th>
-              <th class="p-2 border">小計</th>
-            </tr>
-          </thead>
-          <tbody id="cart-body"></tbody>
-        </table>
-        <p class="text-right mt-4 font-bold">總金額：<span id="total-amount">NT$0</span></p>
-        <div class="text-right mt-4">
-          <button onclick="checkout()" class="bg-[#3f2e2e] text-white px-6 py-2 rounded">結帳</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="review" class="bg-[#fdfaf5] py-16 fade-up">
-      <div class="max-w-[600px] mx-auto px-6">
-        <h2 class="text-2xl mb-6 text-center">留下您的評論</h2>
-        <form class="grid gap-4" onsubmit="submitReview(event)">
-          <input id="reviewer" type="text" placeholder="您的名稱" class="p-3 border rounded" required />
-          <textarea id="review-content" rows="4" placeholder="您的評論內容..." class="p-3 border rounded" required></textarea>
-          <select id="review-rating" class="p-3 border rounded" required>
-            <option value="" disabled selected>給我們幾顆星？</option>
-            <option value="⭐️⭐️⭐️⭐️⭐️">⭐️⭐️⭐️⭐️⭐️</option>
-            <option value="⭐️⭐️⭐️⭐️">⭐️⭐️⭐️⭐️</option>
-            <option value="⭐️⭐️⭐️">⭐️⭐️⭐️</option>
-            <option value="⭐️⭐️">⭐️⭐️</option>
-            <option value="⭐️">⭐️</option>
-          </select>          
-          <button type="submit" class="bg-[#3f2e2e] text-white px-6 py-2 rounded">送出評論</button>
-        </form>
-        <div id="review-list" class="mt-6 space-y-4"></div>
-      </div>
-    </section>
-
-    <section id="about" class="bg-[#fffdf8] py-16 fade-up">
-      <div class="max-w-[1000px] mx-auto px-6 text-center">
-        <h2 class="text-3xl mb-4">關於 Melody Beans</h2>
-        <p class="mb-4">我們是一家結合音樂靈感與手工咖啡的品牌，每款豆子皆源自一段旋律，希望每一口都讓你想起一首歌。</p>
-        <p class="mb-1">📞 電話：03-4081932</p>
-        <p class="mb-1">🏠 地址：桃園市中壢區中正路4段141號</p>
-      </div>
-    </section>
-
-    <footer class="text-center py-6 bg-[#f5efe6] text-sm text-[#3f2e2e]">
-      © 2025 Melody Beans. 品味旋律，啜飲人生。
     </footer>
 
-    <div id="floatingCart" class="floating-cart" onclick="toggleCartPanel(); renderCartPanel()">🛒</div>
-<!-- 🛒 側邊購物車面板 -->
-<div id="cartPanel" class="fixed top-0 right-0 w-[300px] h-full bg-[#fff9f0] shadow-lg p-4 transform translate-x-full transition-transform duration-300 z-[9999] overflow-y-auto">
-  <div class="flex justify-between items-center mb-4">
-    <h2 class="text-xl font-bold">🛍️ 購物清單</h2>
-    <button onclick="toggleCartPanel()" class="text-xl font-bold text-[#b58863]">✕</button>
-  </div>
-  <div id="cartPanelBody" class="space-y-4 text-sm">
-    <!-- JS 動態填入 -->
-  </div>
- <div class="mt-4 text-right font-bold">總金額：<span id="panelTotal">NT$0</span></div>
-<div class="mt-2 text-right">
-  <button onclick="checkout()" class="bg-[#3f2e2e] text-white px-4 py-2 rounded">結帳</button>
-</div>
-  </body>
-</html>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const fadeSections = document.querySelectorAll('.fade-up');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-          observer.unobserve(entry.target);
+        // --- DATA ---
+        const coffeeBeans = [
+            { id: 1, name: '衣索比亞 GEISHA 水洗 (114g)', flavor: '接骨木花、茉莉、檸檬', image: './image/image_1.png', flavorProfile: { acidity: 5, body: 2, sweetness: 4, aroma: 5, finish: 4 }, lifestyle: '適合一個悠閒的午後，搭配輕柔的古典樂，讓花果香氣帶您進入一場心靈的漫遊。推薦搭配檸檬塔或水果風味的甜點。' },
+            { id: 2, name: '衣索比亞 Heirloom 雙重厭氧 (227g)', flavor: '茉莉、橙花、蜂蜜、水蜜桃', image: './image/image_2.png', flavorProfile: { acidity: 4, body: 3, sweetness: 5, aroma: 5, finish: 4 }, lifestyle: '當您需要一絲甜蜜的慰藉時，這款豆子是最佳選擇。蜂蜜和水蜜桃的甜感，適合搭配溫暖的民謠，享受被幸福包圍的感覺。' },
+            { id: 3, name: '哥斯大黎加 Geisha 白蜜 (114g)', flavor: '百合花、野薑花、紅色莓果', image: './image/image_7.png', flavorProfile: { acidity: 4, body: 4, sweetness: 4, aroma: 5, finish: 5 }, lifestyle: '充滿異國情調的風味，適合在一個充滿陽光的早晨品嚐。推薦搭配輕快的 Bossa Nova，感受來自中美洲的熱情與活力。' },
+            { id: 4, name: '衣索比亞 GEISHA 中淺焙 (227g)', flavor: '野莓果醬、檸檬、蘋果', image: './image/image_4.png', flavorProfile: { acidity: 4, body: 3, sweetness: 3, aroma: 4, finish: 3 }, lifestyle: '需要專注與靈感時，這款中淺焙的豆子能提供恰到好處的酸甜感。適合搭配爵士樂，在複雜的旋律中尋找創意的火花。' },
+        ];
+
+        const specialOffers = [
+            { id: 101, name: '本月特選：精品咖啡豆組合', description: '嚴選三款不同風味的精品咖啡豆，一次滿足您的味蕾探險。', originalPrice: 1200, specialPrice: 990, image: 'https://placehold.co/400x250/b58863/FFFFFF?text=咖啡組合' }
+        ];
+
+        const faqs = [
+            { q: '如何保存咖啡豆？', a: '為保持最佳風味，請將咖啡豆存放在不透光、密封的容器中，並置於陰涼乾燥處。建議在開封後一個月內飲用完畢。' },
+            { q: '不同烘焙度有什麼差異？', a: '淺焙通常更能展現咖啡豆原有的花果酸質；中焙則達到酸、甜、苦的平衡；深焙會帶來更濃郁的焦糖、巧克力風味，酸度較低。' },
+            { q: '網站上的商品如何訂購？', a: '本網站目前僅供商品與品牌展示。若您對任何商品有興趣或需要訂購，歡迎直接致電 03-4081932 與我們聯繫，我們將有專人為您服務。' },
+            { q: '樂海樂器咖啡的營業時間是？', a: '我們的營業時間為週一至週六，早上9:00至晚間9:00。週日為公休日。歡迎您隨時來店裡坐坐，喝杯咖啡，聊聊音樂。' }
+        ];
+
+        let reviews = []; // 清空範例評論
+
+        // --- RENDER FUNCTIONS ---
+        const productList = document.getElementById('product-list');
+        if (productList) {
+            coffeeBeans.forEach(bean => {
+                const card = document.createElement('div');
+                card.className = 'card fade-in-up';
+                card.innerHTML = `
+                    <img src="${bean.image}" alt="${bean.name}" class="w-full h-48 object-cover rounded-t-lg">
+                    <div class="p-6">
+                        <h3 class="text-xl font-serif mb-2">${bean.name}</h3>
+                        <p class="text-gray-600">風味：${bean.flavor}</p>
+                    </div>
+                `;
+                productList.appendChild(card);
+            });
         }
-      });
-    }, { threshold: 0.1 });
-    fadeSections.forEach(section => observer.observe(section));
-function toggleCartPanel() {
-  const panel = document.getElementById('cartPanel');
-  panel.classList.toggle('translate-x-full');
-}
 
-function renderCartPanel() {
-  const panelBody = document.getElementById('cartPanelBody');
-  const panelTotal = document.getElementById('panelTotal');
-  if (!panelBody) return;
+        const specialOffersList = document.getElementById('special-offers-list');
+        if (specialOffersList) {
+            specialOffersList.innerHTML = ''; // 清空現有內容
+            if (specialOffers.length === 0) {
+                specialOffersList.innerHTML = '<p class="text-center col-span-full text-lg text-gray-600">目前沒有特別優惠。</p>';
+            } else {
+                specialOffers.forEach(offer => {
+                    const offerCard = document.createElement('div');
+                    offerCard.className = 'card p-6 flex flex-col items-center text-center fade-in-up';
+                    offerCard.innerHTML = `
+                        <img src="${offer.image}" alt="${offer.name}" class="w-full h-40 object-cover rounded-md mb-4">
+                        <h3 class="text-xl font-serif mb-2">${offer.name}</h3>
+                        <p class="text-gray-600 mb-3">${offer.description}</p>
+                        <div class="mt-auto">
+                            <span class="offer-price-old">NT$${offer.originalPrice}</span>
+                            <span class="offer-price-new">NT$${offer.specialPrice}</span>
+                        </div>
+                    `;
+                    specialOffersList.appendChild(offerCard);
+                });
+            }
+        }
 
-  panelBody.innerHTML = '';
-  let total = 0;
+        const faqContainer = document.getElementById('faq-container');
+        if (faqContainer) {
+            faqs.forEach(faq => {
+                const item = document.createElement('div');
+                item.className = 'card';
+                item.innerHTML = `
+                    <button class="accordion-button w-full text-left p-4 text-lg font-semibold">
+                        ${faq.q}
+                    </button>
+                    <div class="accordion-content">
+                        <p class="p-4 pt-0 text-gray-700">${faq.a}</p>
+                    </div>
+                `;
+                faqContainer.appendChild(item);
+            });
+        }
 
-  for (let item in cart) {
-    const { qty, price } = cart[item];
-    const sub = qty * price;
-    total += sub;
+        const reviewList = document.getElementById('review-list');
+        function renderReviews() {
+            if (!reviewList) return;
+            reviewList.innerHTML = '';
+            // 如果 reviews 為空，顯示提示訊息
+            if (reviews.length === 0) {
+                reviewList.innerHTML = '<p class="text-center text-gray-500">目前還沒有顧客回饋，期待您的第一則評論！</p>';
+                return;
+            }
+            reviews.forEach(review => {
+                const item = document.createElement('div');
+                item.className = 'card p-6';
+                item.innerHTML = `
+                    <div class="flex items-center mb-2">
+                        <span class="font-semibold text-lg mr-2">${review.name}</span>
+                        <span class="text-yellow-500">${review.rating}</span>
+                    </div>
+                    <p class="text-gray-700">${review.content}</p>
+                `;
+                reviewList.appendChild(item);
+            });
+        }
+        renderReviews();
+        
+        // --- FLAVOR RADAR CHART LOGIC ---
+        const flavorSelect = document.getElementById('flavor-select');
+        const lifestyleSuggestionP = document.querySelector('#lifestyle-suggestion p');
+        let radarChart;
 
-    const div = document.createElement('div');
-    div.className = 'border-b pb-2';
-    div.innerHTML = `
-  <div class="font-bold">${item}</div>
-  <div class="text-sm text-gray-500">單價：${formatPrice(price)}</div>
-  <div class="flex justify-between items-center mt-1">
-    <div class="flex items-center gap-2">
-      <button onclick="updateQty('${item}', -1); renderCartPanel();" class="px-2 bg-gray-200 rounded">-</button>
-      ${qty}
-      <button onclick="updateQty('${item}', 1); renderCartPanel();" class="px-2 bg-gray-200 rounded">+</button>
-    </div>
-    <div class="text-right font-bold">${formatPrice(sub)}</div>
-  </div>
-`;
+        if (flavorSelect) {
+            coffeeBeans.forEach(bean => {
+                const option = document.createElement('option');
+                option.value = bean.id;
+                option.textContent = bean.name;
+                flavorSelect.appendChild(option);
+            });
 
-    panelBody.appendChild(div);
-  }
+            const ctx = document.getElementById('flavorRadarChart')?.getContext('2d');
+            if (ctx) {
+                radarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['酸度', '醇厚度', '甜度', '香氣', '餘韻'],
+                        datasets: [{
+                            label: '風味圖譜',
+                            data: [0, 0, 0, 0, 0],
+                            backgroundColor: 'rgba(181, 136, 99, 0.2)',
+                            borderColor: 'rgba(181, 136, 99, 1)',
+                            pointBackgroundColor: 'rgba(181, 136, 99, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(181, 136, 99, 1)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                                grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                pointLabels: { font: { size: 14, family: "'Noto Sans TC', sans-serif" } },
+                                suggestedMin: 0,
+                                suggestedMax: 5,
+                                ticks: {
+                                    stepSize: 1,
+                                    backdropColor: 'transparent'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
 
-  panelTotal.textContent = formatPrice(total);
-}
+            flavorSelect.addEventListener('change', (e) => {
+                const selectedBean = coffeeBeans.find(b => b.id == e.target.value);
+                if (selectedBean && radarChart) {
+                    radarChart.data.datasets[0].data = Object.values(selectedBean.flavorProfile);
+                    radarChart.data.datasets[0].label = selectedBean.name;
+                    radarChart.update();
+                    if(lifestyleSuggestionP) {
+                        lifestyleSuggestionP.textContent = selectedBean.lifestyle;
+                    }
+                }
+            });
+            // Trigger change to load the first item's data
+            flavorSelect.dispatchEvent(new Event('change'));
+        }
 
-const products = [
-  {
-    name: 'GEISHA 水洗（114g）',
-    country: '衣索比亞',
-    variety: 'GEISHA 水洗',
-    flavor: '接骨木花、茉莉花橙花、白玫瑰、百合花蘋果、野莓果醬、檸檬、百香果',
-    roast: '淺焙',
-    weight: '114g',
-    expiry: '2025/10/12',
-    price: 280,
-    category: 'light',
-    image: './image/1.png'
-  },
-  {
-    name: 'Heirloom 雙重厭氧（227g）- 批次A',
-    country: '衣索比亞',
-    variety: 'Heirloom',
-    flavor: '茉莉、橙花、蜂蜜、水蜜桃',
-    roast: '淺焙',
-    weight: '227g',
-    expiry: '2025/10/28',
-    price: 600,
-    category: 'light',
-    image: './image/2.png'
-  },
-  {
-    name: 'Heirloom 雙重厭氧（227g）- 批次B',
-    country: '衣索比亞',
-    variety: 'Heirloom',
-    flavor: '茉莉、橙花、蜂蜜、水蜜桃',
-    roast: '淺焙',
-    weight: '227g',
-    expiry: '2025/10/31',
-    price: 600,
-    category: 'light',
-    image: './image/3.png'
-  },
-  {
-    name: 'GEISHA（227g）中淺焙',
-    country: '衣索比亞',
-    variety: 'GEISHA',
-    flavor: '接骨木花、茉莉花橙花、白玫瑰、百合花蘋果、野莓果醬、檸檬',
-    roast: '中淺焙',
-    weight: '227g',
-    expiry: '2025/11/01',
-    price: 540,
-    category: 'medium-light',
-    image: './image/4.png'
-  },
-  {
-    name: 'GEISHA 水洗（227g）2280m',
-    country: '衣索比亞',
-    variety: 'GEISHA 水洗',
-    flavor: '接骨木花、茉莉花橙花、白玫瑰、百合花蘋果、野莓果醬、檸檬',
-    roast: '中淺焙',
-    weight: '227g',
-    expiry: '2025/11/01',
-    price: 540,
-    category: 'medium-light',
-    image: './image/5.png'
-  },
-  {
-    name: '衣索比亞 淺焙（227g）',
-    country: '衣索比亞',
-    variety: '',
-    flavor: '接骨木花、茉莉花橙花、白玫瑰、百合花蘋果、野莓果醬、檸檬',
-    roast: '淺焙',
-    weight: '227g',
-    expiry: '2025/11/01',
-    price: 540,
-    category: 'light',
-    image: './image/6.png'
-  },
-  {
-    name: '哥斯大黎加 Geisha 白蜜（114g）',
-    country: '哥斯大黎加',
-    variety: 'Geisha（藝妓）',
-    flavor: '百合花、野薑花、檸檬草、柑橘、紅色莓果、蜂蜜',
-    roast: '淺焙',
-    weight: '114g',
-    expiry: '2025/08/15',
-    price: 800,
-    category: 'light',
-    image: './image/7.png'
-  },
-  {
-    name: '哥斯大黎加 淺焙（227g）',
-    country: '哥斯大黎加',
-    variety: '',
-    flavor: '百合花、野薑花、檸檬草、柑橘、紅色莓果、蜂蜜',
-    roast: '淺焙',
-    weight: '227g',
-    expiry: '2025/08/15',
-    price: 1800,
-    category: 'light',
-    image: './image/8.png'
-  }
-];
-
-
-  
-
-
-
-
-    const productContainer = document.getElementById('product-cards');
-    const categoryFilter = document.getElementById('category');
-    const cart = {};
-
-    function renderProducts(filter = 'all') {
-      if (!productContainer) return;
-      productContainer.innerHTML = '';
-      products.filter(p => filter === 'all' || p.category === filter).forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'ornate-box hover:scale-105 transition-transform duration-300';
-        card.innerHTML = `
-          <img src="${p.image}" alt="${p.name}" class="w-full h-48 object-cover rounded mb-3" />
-          <h3 class="text-xl font-bold mb-1">${p.name}</h3>
-          <p class="mb-1">國家：${p.country}｜品種：${p.variety}</p>
-          <p class="mb-1">風味：${p.flavor}</p>
-          <p class="mb-1">焙度：${p.roast}｜重量：${p.weight}</p>
-          <p class="mb-1">期限：${p.expiry}</p>
-          <p class="mb-2 font-bold">NT$${p.price}</p>
-          <button class="bg-[#3f2e2e] text-white px-4 py-2 rounded" onclick="addToCart('${p.name}', ${p.price})">加入購物車</button>
-        `;
-        productContainer.appendChild(card);
-      });
-    }
-    function scrollToCart() {
-  const cartSection = document.getElementById('cart');
-  if (cartSection) {
-    cartSection.scrollIntoView({ behavior: 'smooth' });
-  }
-}
-
-    window.addToCart = function(name, price) {
-      if (!cart[name]) cart[name] = { qty: 0, price };
-      cart[name].qty++;
-      renderCart();
-    }
-
-    function formatPrice(n) {
-      return `NT$${n.toLocaleString('zh-Hant-TW')}`;
-    }
-
-    window.updateQty = function(name, delta) {
-      if (!cart[name]) return;
-      cart[name].qty += delta;
-      if (cart[name].qty <= 0) {
-        delete cart[name];
-      }
-      renderCart();
-    }
-
-    window.removeItem = function(name) {
-      delete cart[name];
-      renderCart();
-    }
-
-    function renderCart() {
-      const tbody = document.getElementById('cart-body');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-      let total = 0;
-
-      for (let item in cart) {
-        const tr = document.createElement('tr');
-        const { qty, price } = cart[item];
-        const sub = qty * price;
-        total += sub;
-
-        tr.innerHTML = `
-          <td class="border p-2">${item}</td>
-          <td class="border p-2 flex items-center gap-2">
-            <button onclick="updateQty('${item}', -1)" class="px-2 bg-gray-200 rounded">➖</button>
-            ${qty}
-            <button onclick="updateQty('${item}', 1)" class="px-2 bg-gray-200 rounded">➕</button>
-          </td>
-          <td class="border p-2">${formatPrice(price)}</td>
-          <td class="border p-2 flex justify-between items-center">
-            ${formatPrice(sub)}
-            <button onclick="removeItem('${item}')" class="ml-4 text-red-500">🗑️</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      }
-
-      const totalElem = document.getElementById('total-amount');
-      if (totalElem) totalElem.textContent = formatPrice(total);
-    }
-
-    window.submitReview = function(e) {
-      e.preventDefault();
-      const name = document.getElementById('reviewer').value;
-      const content = document.getElementById('review-content').value;
-      const rating = document.getElementById('review-rating').value;
-      const reviewList = document.getElementById('review-list');
-      const div = document.createElement('div');
-      div.className = 'p-4 border rounded shadow';
-      div.innerHTML = `<strong>${name} ${rating}</strong><p class="mt-1">${content}</p>`;
-      reviewList.prepend(div);
-      e.target.reset();
-    }
-
-    function generateOrderId() {
-      const now = new Date();
-      return `ORD-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}${now.getSeconds().toString().padStart(2,'0')}`;
-    }
-
-    async function submitOrder() {
-      const orderId = generateOrderId();
-      const loading = document.createElement('div');
-      loading.textContent = '訂單送出中...';
-      loading.className = 'text-center mt-4 text-[#b58863] font-bold';
-      document.body.appendChild(loading);
-
-      const payload = {
-        orderId,
-        name: prompt("請輸入姓名"),
-        phone: prompt("請輸入電話"),
-        address: prompt("請輸入地址"),
-        email: prompt("請輸入 Email"),
-        paymentMethod: prompt("請輸入付款方式（信用卡/轉帳/貨到付款）"),
-        orderItems: Object.entries(cart).map(([name, { qty, price }]) => ({ name, quantity: qty, price }))
-      };
-
-      if (!payload.name || !payload.phone || !payload.address || !payload.email || !payload.paymentMethod) {
-        document.body.removeChild(loading);
-        alert('資料不完整，請重新輸入。');
-        return;
-      }
-
-      try {
-        await fetch('https://script.google.com/macros/s/AKfycbwahfqOxLyrah1ebewyZX5Wzqba4jnQ-alUV3fvGPYrFTsaKbqwoCt5k5DPT8X_bBPN/exec', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-          headers: { 'Content-Type': 'application/json' }
+        // --- EVENT LISTENERS ---
+        const faqButtons = document.querySelectorAll('.accordion-button');
+        faqButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.toggle('open');
+                const content = button.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                }
+            });
         });
-        document.body.removeChild(loading);
-        alert(`訂單已送出！訂單編號：${orderId}\n確認信已寄到您的 Email`);
-        for (let item in cart) delete cart[item];
-        renderCart();
-      } catch (e) {
-        document.body.removeChild(loading);
-        alert('訂單送出失敗，請稍後再試');
-      }
-    }
 
-    window.checkout = function() {
-      if (Object.keys(cart).length === 0) return alert('購物車是空的！');
-      submitOrder();
-    }
+        const reviewForm = document.getElementById('review-form');
+        if(reviewForm) {
+            reviewForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newReview = {
+                    name: document.getElementById('reviewer-name').value,
+                    rating: document.getElementById('review-rating').value,
+                    content: document.getElementById('review-content').value,
+                };
+                reviews.push(newReview);
+                localStorage.setItem('melodyReviews', JSON.stringify(reviews));
+                renderReviews();
+                reviewForm.reset();
+                alert('感謝您的評論！');
+            });
+        }
+        
+        const inquiryForm = document.getElementById('inquiry-form');
+        if(inquiryForm) {
+            inquiryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('inquiry-name').value;
+                const email = document.getElementById('inquiry-email').value;
+                const message = document.getElementById('inquiry-message').value;
+                
+                // Check if email field is valid according to HTML5 validation
+                const emailInput = document.getElementById('inquiry-email');
+                if (!emailInput.checkValidity()) {
+                    alert('請輸入有效的電子郵件地址。');
+                    return;
+                }
 
-    if (categoryFilter) {
-      categoryFilter.addEventListener('change', e => renderProducts(e.target.value));
-    }
+                const subject = encodeURIComponent(`來自網站的詢問 - ${name}`);
+                const body = encodeURIComponent(`發件人姓名: ${name}\n發件人電子郵件: ${email}\n\n訊息內容:\n${message}`);
+                
+                // Construct mailto link
+                const mailtoLink = `mailto:melodybean33427@gmail.com?subject=${subject}&body=${body}`;
+                
+                // Attempt to open email client
+                window.location.href = mailtoLink;
 
-    renderProducts();
-  });
-</script>
+                alert('您的訊息已準備就緒，即將透過您的電子郵件應用程式開啟。請在新開啟的視窗中點擊「傳送」按鈕，以完成信件發送。');
+                inquiryForm.reset();
+            });
+        }
 
+        // Scroll Animation Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+    });
+    </script>
+</body>
+</html>
